@@ -1,5 +1,5 @@
-# The PNNL Proteomics Pipeline: P3
-This project provides the basic analysis and tools for carrying out end-to-end proteomic analysis for data generated at PNNL. This repository will serve as a resource upon which we can build additional tools in a reusable fashion. Ideally we will include scripts and libraries that can be used as building blocks for future analysis. 
+# P3: AML Drug Combination Analysis
+This project provides the basic analysis and tools for carrying out end-to-end proteomic analysis for data generated at PNNL. This repository will serve as a resource upon which we can build additional tools in a reusable fashion. Ideally we will include scripts and libraries that can be used as building blocks for future analysis. We will use these scripts to specifically analyze drug combination data.
 
 ## Overview
 
