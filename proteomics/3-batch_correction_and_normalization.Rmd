@@ -32,8 +32,8 @@ phenodata <- read_xlsx("../data/TMTmappingTable_Preclinical_Resistance_M.xlsx") 
          Time = as.factor(Time),
          `Treatment:Time` = paste0(Treatment,":",Time))
 rownames(phenodata) <- str_extract(phenodata$Sample, "\\d\\d$")
-save(phenodata, file="data/Molm14_phenodata.RData")
-
+write.table(phenodata, file="data/molm14_phenodata.txt",
+            quote=F, sep="\t")
 # HL60
 phenodata <- read_xlsx("../data/TMTmappingTable_Preclinical_Resistance_H.xlsx") %>%
   as.data.frame() %>%
@@ -42,7 +42,8 @@ phenodata <- read_xlsx("../data/TMTmappingTable_Preclinical_Resistance_H.xlsx") 
          Time = as.factor(Time),
          `Treatment:Time` = paste0(Treatment,":",Time))
 rownames(phenodata) <- str_extract(phenodata$Sample, "\\d\\d$")
-save(phenodata, file="data/HL60_phenodata.RData")
+write.table(phenodata, file="data/hl60_phenodata.txt",
+            quote=F, sep="\t")
 ```
 
 # Normalize and batch correct global data
@@ -54,7 +55,8 @@ normalize_global_data <- function(path_to_crosstab, path_to_phenodata, n.sigfig=
   # Make MSnSet
   crosstab <- read.table(path_to_crosstab, check.names = F)
   m <- MSnSet(as.matrix(crosstab))
-  load(path_to_phenodata)
+  phenodata <- read.table(path_to_phenodata, colClasses="character")
+  phenodata$LoadingMass <- as.numeric(phenodata$LoadingMass)
   pData(m) <- phenodata[sampleNames(m),]
   
   # Medpolish and save
@@ -94,7 +96,8 @@ normalize_phospho_data <- function(path_to_crosstab, path_to_phenodata, path_to_
   # Make MSnSet
   crosstab <- read.table(path_to_crosstab, check.names = F)
   m <- MSnSet(as.matrix(crosstab))
-  load(path_to_phenodata)
+  phenodata <- read.table(path_to_phenodata, colClasses="character")
+  phenodata$LoadingMass <- as.numeric(phenodata$LoadingMass)
   pData(m) <- phenodata[sampleNames(m),]
   
   # Normalize by global sample medians
@@ -169,23 +172,23 @@ t0 <- Sys.time(); print(t0)
 lapply(list.files("data/Molm14_global_data/", "_original.txt",
                   full.names=T),
        normalize_global_data,
-       path_to_phenodata = "data/Molm14_phenodata.RData")
+       path_to_phenodata = "data/molm14_phenodata.txt")
 
 lapply(list.files("data/HL60_global_data/", "_original.txt",
                   full.names=T),
        normalize_global_data,
-       path_to_phenodata = "data/HL60_phenodata.RData")
+       path_to_phenodata = "data/hl60_phenodata.txt")
 
 lapply(list.files("data/Molm14_phospho_data/", "_original.txt",
                   full.names=T),
        normalize_phospho_data,
-       path_to_phenodata = "data/Molm14_phenodata.RData",
+       path_to_phenodata = "data/molm14_phenodata.txt",
        path_to_global_crosstab="data/Molm14_global_data/ptrc_ex14_molm14_crosstab_global_gene_original.txt")
 
 lapply(list.files("data/HL60_phospho_data/", "_original.txt",
                   full.names=T),
        normalize_phospho_data,
-       path_to_phenodata = "data/HL60_phenodata.RData",
+       path_to_phenodata = "data/hl60_phenodata.txt",
        path_to_global_crosstab="data/HL60_global_data/ptrc_ex14_hl60_crosstab_global_gene_original.txt")
 
 t1 <- Sys.time(); print(t1); print(t1-t0)

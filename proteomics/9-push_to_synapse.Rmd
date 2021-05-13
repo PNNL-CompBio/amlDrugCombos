@@ -12,7 +12,15 @@ syn = reticulate::import("synapseclient")
 sync = syn$login()
 ```
 
-```{r upload}
+```{r upload_phenodata}
+phenodata_tables <- list.files(path = "data/",
+                               pattern = "phenodata.txt",
+                               full.names = T)
+lapply(phenodata_tables, synapseStore,
+       parentId = "syn24171153")
+```
+
+```{r upload_crosstabs}
 synapse_id_map <- c("syn25714195" = "data/Molm14_global_data/",
                     "syn25714196" = "data/Molm14_phospho_data/",
                     "syn25714197" = "data/HL60_global_data/",
