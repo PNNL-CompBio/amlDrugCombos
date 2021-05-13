@@ -9,6 +9,7 @@ quantification/data
 
 # Session Data files
 .RData
+.Rcache
 
 # User-specific files
 .Ruserdata
