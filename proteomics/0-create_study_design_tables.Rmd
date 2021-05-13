@@ -1,0 +1,137 @@
+---
+title: "PTRC Ex14 Study design tables"
+author: "Michael Nestor"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+---
+
+# Molm14 Study design tables
+
+```{r}
+library(PlexedPiper)
+library(stringr)
+library(dplyr)
+library(readxl)
+```
+
+```{r}
+global_data_package_num <- 3705
+global_study_design_folder <- "study_design/Molm14_global_study_design/"
+phospho_data_package_num <- 3717
+phospho_study_design_folder <- "study_design/Molm14_phospho_study_design/"
+
+fractions <- get_job_records_by_dataset_package(global_data_package_num) %>%
+  distinct(Dataset) %>%
+  mutate(PlexID = str_extract(Dataset, "Plex_\\d\\d"))
+
+head(fractions)
+
+write.table(fractions, file=file.path(global_study_design_folder, "fractions.txt"),
+            quote=F, sep="\t", row.names=F)
+
+fractions <- get_job_records_by_dataset_package(phospho_data_package_num) %>%
+  distinct(Dataset) %>%
+  mutate(PlexID = str_extract(Dataset, "P\\d\\d"))
+
+head(fractions)
+
+write.table(fractions, file=file.path(phospho_study_design_folder, "fractions.txt"),
+            quote=F, sep="\t", row.names=F)
+
+samples <- read_xlsx("./../data/TMTmappingTable_Preclinical_Resistance_M.xlsx") %>%
+  as.data.frame() %>%
+  select(Sample, Channel, Plex) %>%
+  mutate(PlexID = paste0("Plex_", sprintf("%02d", Plex)),
+         QuantBlock = 1,
+         MeasurementName = str_extract(Sample, "\\d\\d$")) %>%
+  select(PlexID,
+         QuantBlock,
+         ReporterName = Channel,
+         ReporterAlias = Sample,
+         MeasurementName)
+
+head(samples)
+
+references <- samples %>%
+  select(PlexID, QuantBlock, ReporterAlias) %>%
+  filter(ReporterAlias == "AML_Reference") %>%
+  dplyr::rename(Reference = ReporterAlias)
+
+head(references)
+
+write.table(samples, file=file.path(global_study_design_folder, "samples.txt"),
+            quote=F, sep="\t", row.names=F)
+write.table(references, file=file.path(global_study_design_folder, "references.txt"),
+            quote=F, sep="\t", row.names=F)
+
+samples <- samples %>% mutate(PlexID = sub("Plex_", "P", PlexID))
+references <- references %>% mutate(PlexID = sub("Plex_", "P", PlexID))
+
+
+write.table(samples, file=file.path(phospho_study_design_folder, "samples.txt"),
+            quote=F, sep="\t", row.names=F)
+write.table(references, file=file.path(phospho_study_design_folder, "references.txt"),
+            quote=F, sep="\t", row.names=F)
+```
+
+# Molm14 Study design tables
+
+```{r}
+global_data_package_num <- 3706
+global_study_design_folder <- "study_design/HL60_global_study_design/"
+phospho_data_package_num <- 3733
+phospho_study_design_folder <- "study_design/HL60_phospho_study_design/"
+
+
+fractions <- get_job_records_by_dataset_package(global_data_package_num) %>%
+  distinct(Dataset) %>%
+  mutate(PlexID = str_extract(Dataset, "Plex_\\d\\d"))
+
+head(fractions)
+
+write.table(fractions, file=file.path(global_study_design_folder, "fractions.txt"),
+            quote=F, sep="\t", row.names=F)
+
+fractions <- get_job_records_by_dataset_package(phospho_data_package_num) %>%
+  distinct(Dataset) %>%
+  mutate(PlexID = str_extract(Dataset, "P\\d\\d"))
+
+head(fractions)
+
+write.table(fractions, file=file.path(phospho_study_design_folder, "fractions.txt"),
+            quote=F, sep="\t", row.names=F)
+
+samples <- read_xlsx("./../data/TMTmappingTable_Preclinical_Resistance_H.xlsx") %>%
+  as.data.frame() %>%
+  select(Sample, Channel, Plex) %>%
+  mutate(PlexID = paste0("Plex_", sprintf("%02d", Plex)),
+         QuantBlock = 1,
+         MeasurementName = str_extract(Sample, "\\d\\d$")) %>%
+  select(PlexID,
+         QuantBlock,
+         ReporterName = Channel,
+         ReporterAlias = Sample,
+         MeasurementName)
+
+head(samples)
+
+references <- samples %>%
+  select(PlexID, QuantBlock, ReporterAlias) %>%
+  filter(ReporterAlias == "AML_Reference") %>%
+  dplyr::rename(Reference = ReporterAlias)
+
+head(references)
+
+write.table(samples, file=file.path(global_study_design_folder, "samples.txt"),
+            quote=F, sep="\t", row.names=F)
+write.table(references, file=file.path(global_study_design_folder, "references.txt"),
+            quote=F, sep="\t", row.names=F)
+
+samples <- samples %>% mutate(PlexID = sub("Plex_", "P", PlexID))
+references <- references %>% mutate(PlexID = sub("Plex_", "P", PlexID))
+
+
+write.table(samples, file=file.path(phospho_study_design_folder, "samples.txt"),
+            quote=F, sep="\t", row.names=F)
+write.table(references, file=file.path(phospho_study_design_folder, "references.txt"),
+            quote=F, sep="\t", row.names=F)
+```

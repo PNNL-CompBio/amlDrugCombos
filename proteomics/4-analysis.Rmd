@@ -1,0 +1,28 @@
+---
+title: "PTRC Ex14 Analysis"
+author: "Michael Nestor"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+output: html_document
+---
+
+
+```{r}
+library(vp.misc)
+library(MSnbase)
+# Molm 14 PCA
+
+crosstabs <- list.files("data/Molm14_global_data/", "_original.txt", full.names=T)
+crosstabs <- c(crosstabs, list.files("data/Molm14_phospho_data/", "_original.txt", full.names=T))
+
+crosstabs <- crosstabs[1]
+
+load("data/Molm14_phenodata.RData")
+for (path in crosstabs) {
+  crosstab <- read.table(path, check.names=F)
+  m <- MSnSet(as.matrix(crosstab))
+  pData(m) <- phenodata[sampleNames(m),]
+  p <- plot_pca_v3(m, "Plex")
+  print(p)
+}
+```
+

@@ -1,0 +1,36 @@
+---
+title: "PTRC Ex14 Push to synapse"
+author: "Michael Nestor (michael.nestor@pnnl.gov)"
+output: html_document
+---
+
+```{r login}
+library(amlresistancenetworks)
+library(reticulate)
+
+syn = reticulate::import("synapseclient")
+sync = syn$login()
+```
+
+```{r upload_phenodata}
+phenodata_tables <- list.files(path = "data/",
+                               pattern = "phenodata.txt",
+                               full.names = T)
+lapply(phenodata_tables, synapseStore,
+       parentId = "syn24171153")
+```
+
+```{r upload_crosstabs}
+synapse_id_map <- c("syn25714195" = "data/Molm14_global_data/",
+                    "syn25714196" = "data/Molm14_phospho_data/",
+                    "syn25714197" = "data/HL60_global_data/",
+                    "syn25714200" = "data/HL60_phospho_data/")
+
+for (i in seq_along(synapse_id_map)) {
+  crosstabs <- list.files(path = synapse_id_map[i],
+                          pattern = "crosstab.*.txt",
+                          full.names = T)
+  lapply(crosstabs, synapseStore,
+         parentId = names(synapse_id_map)[i])
+}
+```

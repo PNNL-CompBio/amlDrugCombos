@@ -1,0 +1,196 @@
+---
+title: "PTRC Ex14 Batch correction and normalization"
+author: "Michael Nestor"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+output: html_document
+---
+
+
+```{r setup}
+library(vp.misc)
+library(sva)
+library(dplyr)
+library(tibble)
+library(tidyr)
+
+library(devtools)
+source_url("https://raw.githubusercontent.com/sgosline/beatAMLproteomics/main/dataProcessing/proteomicsNormalizationMethods.R")
+```
+
+# Load metadata
+
+```{r load_metadata}
+library(readxl)
+library(dplyr)
+library(stringr)
+
+# Molm14
+phenodata <- read_xlsx("../data/TMTmappingTable_Preclinical_Resistance_M.xlsx") %>%
+  as.data.frame() %>%
+  filter(!grepl("Reference", Sample)) %>%
+  mutate(Plex = as.factor(Plex),
+         Time = as.factor(Time),
+         `Treatment:Time` = paste0(Treatment,":",Time))
+rownames(phenodata) <- str_extract(phenodata$Sample, "\\d\\d$")
+write.table(phenodata, file="data/molm14_phenodata.txt",
+            quote=F, sep="\t")
+# HL60
+phenodata <- read_xlsx("../data/TMTmappingTable_Preclinical_Resistance_H.xlsx") %>%
+  as.data.frame() %>%
+  filter(!grepl("Reference", Sample)) %>%
+  mutate(Plex = as.factor(Plex),
+         Time = as.factor(Time),
+         `Treatment:Time` = paste0(Treatment,":",Time))
+rownames(phenodata) <- str_extract(phenodata$Sample, "\\d\\d$")
+write.table(phenodata, file="data/hl60_phenodata.txt",
+            quote=F, sep="\t")
+```
+
+# Normalize and batch correct global data
+
+```{r normalize_global_data}
+normalize_global_data <- function(path_to_crosstab, path_to_phenodata, n.sigfig=3) {
+    
+  message("Normalizing ", path_to_crosstab)
+  # Make MSnSet
+  crosstab <- read.table(path_to_crosstab, check.names = F)
+  m <- MSnSet(as.matrix(crosstab))
+  phenodata <- read.table(path_to_phenodata, colClasses="character")
+  phenodata$LoadingMass <- as.numeric(phenodata$LoadingMass)
+  pData(m) <- phenodata[sampleNames(m),]
+  
+  # Medpolish and save
+  m <- normalizeByMedpolish(m)
+  new_path_to_crosstab <- sub("_original", "_medpolish", path_to_crosstab)
+  write.table(signif(exprs(m),n.sigfig),
+              file = new_path_to_crosstab,
+              quote=F, sep="\t")
+  
+  # Missing value filter
+  m <- m %>%
+      filterByProportionMissingValues(least_proportion_threshold = 0.5) %>%
+      filterByMissingPerBatch("Plex", least_count_threshold = 1L)
+      
+  # Batch correction
+  removed_covariates <- c("Plex", "LoadingMass")
+  retained_covariates <- c("Treatment:Time")
+  m <- correct_batch_effect_empiricalBayesLM(m, removed_covariates)
+  
+  # Medpolish and save
+  m <- normalizeByMedpolish(m)
+  new_path_to_crosstab <- sub("_original", "_corrected", path_to_crosstab)
+  write.table(signif(exprs(m),n.sigfig),
+              file = new_path_to_crosstab,
+              quote=F, sep="\t")
+}
+  
+```
+
+# Normalize and batch correct phospho data
+
+```{r normalize_phospho_data}
+
+normalize_phospho_data <- function(path_to_crosstab, path_to_phenodata, path_to_global_crosstab, n.sigfig=3) {
+    
+  message("Normalizing ", path_to_crosstab)
+  # Make MSnSet
+  crosstab <- read.table(path_to_crosstab, check.names = F)
+  m <- MSnSet(as.matrix(crosstab))
+  phenodata <- read.table(path_to_phenodata, colClasses="character")
+  phenodata$LoadingMass <- as.numeric(phenodata$LoadingMass)
+  pData(m) <- phenodata[sampleNames(m),]
+  
+  # Normalize by global sample medians
+  global_crosstab <- read.table(path_to_global_crosstab, check.names = F)
+  global_coeffs <- apply(global_crosstab,
+                         MARGIN = 2, FUN = median, na.rm = T)
+  
+  exprs(m) <- sweep(exprs(m), 2, global_coeffs)
+  
+  # Medpolish and save
+  m <- normalizeByMedpolish(m)
+  new_path_to_crosstab <- sub("_original", "_medpolish", path_to_crosstab)
+  write.table(signif(exprs(m),n.sigfig),
+              file = new_path_to_crosstab,
+              quote=F, sep="\t")
+  
+  # Missing value filter
+  m <- m %>%
+      filterByProportionMissingValues(least_proportion_threshold = 0.5) %>%
+      filterByMissingPerBatch("Plex", least_count_threshold = 1L)
+      
+  # Batch correction
+  removed_covariates <- c("Plex", "LoadingMass")
+  retained_covariates <- c("Treatment:Time")
+  m <- correct_batch_effect_empiricalBayesLM(m, removed_covariates)
+  
+  # Medpolish and save
+  m <- normalizeByMedpolish(m)
+  new_path_to_crosstab <- sub("_original", "_corrected", path_to_crosstab)
+  write.table(signif(exprs(m),n.sigfig),
+              file = new_path_to_crosstab,
+              quote=F, sep="\t")
+  
+  # Reload original crosstab
+  crosstab <- read.table(path_to_crosstab, check.names = F)
+  m <- MSnSet(as.matrix(crosstab))
+  load(path_to_phenodata)
+  pData(m) <- phenodata[sampleNames(m),]
+  
+  # Medpolish without global coefficients
+  m <- normalizeByMedpolish(m)
+  new_path_to_crosstab <- sub("_original", "_medpolish_phospho_coeffs", path_to_crosstab)
+  write.table(signif(exprs(m),n.sigfig),
+              file = new_path_to_crosstab,
+              quote=F, sep="\t")
+  
+  # Missing value filter
+  m <- m %>%
+      filterByProportionMissingValues(least_proportion_threshold = 0.5) %>%
+      filterByMissingPerBatch("Plex", least_count_threshold = 1L)
+      
+  # Batch correction
+  removed_covariates <- c("Plex", "LoadingMass")
+  retained_covariates <- c("Treatment:Time")
+  m <- correct_batch_effect_empiricalBayesLM(m, removed_covariates)
+  
+  # Medpolish and save
+  m <- normalizeByMedpolish(m)
+  new_path_to_crosstab <- sub("_original", "_corrected_phospho_coeffs", path_to_crosstab)
+  write.table(signif(exprs(m),n.sigfig),
+              file = new_path_to_crosstab,
+              quote=F, sep="\t")
+}
+
+
+```
+
+```{r main_loop}
+
+t0 <- Sys.time(); print(t0)
+
+lapply(list.files("data/Molm14_global_data/", "_original.txt",
+                  full.names=T),
+       normalize_global_data,
+       path_to_phenodata = "data/molm14_phenodata.txt")
+
+lapply(list.files("data/HL60_global_data/", "_original.txt",
+                  full.names=T),
+       normalize_global_data,
+       path_to_phenodata = "data/hl60_phenodata.txt")
+
+lapply(list.files("data/Molm14_phospho_data/", "_original.txt",
+                  full.names=T),
+       normalize_phospho_data,
+       path_to_phenodata = "data/molm14_phenodata.txt",
+       path_to_global_crosstab="data/Molm14_global_data/ptrc_ex14_molm14_crosstab_global_gene_original.txt")
+
+lapply(list.files("data/HL60_phospho_data/", "_original.txt",
+                  full.names=T),
+       normalize_phospho_data,
+       path_to_phenodata = "data/hl60_phenodata.txt",
+       path_to_global_crosstab="data/HL60_global_data/ptrc_ex14_hl60_crosstab_global_gene_original.txt")
+
+t1 <- Sys.time(); print(t1); print(t1-t0)
+```
+

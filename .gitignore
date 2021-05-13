@@ -1,7 +1,7 @@
 # Pipeline data
-global/data
-phospho/data
-
+data
+proteomics/data
+quantification/data
 
 # History files
 .Rhistory
@@ -9,6 +9,7 @@ phospho/data
 
 # Session Data files
 .RData
+.Rcache
 
 # User-specific files
 .Ruserdata
