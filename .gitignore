@@ -1,7 +1,7 @@
 # Pipeline data
-global/data
-phospho/data
-
+data
+proteomics/data
+quantification/data
 
 # History files
 .Rhistory

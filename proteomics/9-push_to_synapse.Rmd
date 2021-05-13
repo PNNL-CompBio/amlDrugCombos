@@ -1,0 +1,49 @@
+---
+title: "PTRC Ex14 Push to synapse"
+author: "Michael Nestor (michael.nestor@pnnl.gov)"
+output: html_document
+---
+
+
+# Export crosstabs to txt file and push to synapse
+
+```{r}
+library(amlresistancenetworks)
+library(dplyr)
+
+library(reticulate)
+syn = reticulate::import("synapseclient")
+sync = syn$login()
+```
+
+```{r molm14_global}
+path_to_data_folder <- "data/HL60_global_data/"
+synapse_folder <- "syn25714195"
+crosstabs <- list.files(path_to_data_folder, "crosstab.*.txt",
+                        full.names=T)
+lapply(crosstabs, synapseStore, synapse_folder)
+```
+
+```{r molm14_phospho}
+path_to_data_folder <- "data/Molm14_phospho_data/"
+synapse_folder <- "syn25714196"
+crosstabs <- list.files(path_to_data_folder, "crosstab.*.txt",
+                        full.names=T)
+lapply(crosstabs, synapseStore, synapse_folder)
+```
+
+```{r hl60_global}
+path_to_data_folder <- "data/HL60_global_data/"
+synapse_folder <- "syn25714197"
+crosstabs <- list.files(path_to_data_folder, "crosstab.*.txt",
+                        full.names=T)
+lapply(crosstabs, synapseStore, synapse_folder)
+```
+
+```{r hl60_phospho}
+path_to_data_folder <- "data/HL60_phospho_data/"
+synapse_folder <- "syn25714200"
+crosstabs <- list.files(path_to_data_folder, "crosstab.*.txt",
+                        full.names=T)
+lapply(crosstabs, synapseStore, synapse_folder)
+```
