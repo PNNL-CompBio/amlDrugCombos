@@ -8,13 +8,11 @@ This section describes what you need to know to get started using this code base
 ### To use this pipeline
 This repository is only the basic structure of the tools needed, not the end-to-end analysis. Here are the steps you'll need to use this:
 
-1- Read up on the tools
-  - GitHub requires some basic protocols such as pull requests and commits, you should try to get a basic understanding. I found this [tutorial](https://medium.com/@jonathanmines/the-ultimate-github-collaboration-guide-df816e98fb67) that can serve as a starting point. 
-  - Synapse also has a bit of learning curve. To understand what Synapse is and isn't, check out [this document](https://docs.synapse.org/articles/getting_started.html).
-2- Get [RStudio](http://rstudio.org). Basic R is essential, but RStudio will make your life a lot easier, I promise!
-3- Install the [synapse python client](https://python-docs.synapse.org/build/html/index.html), create a [`.synapseConfig` file](https://python-docs.synapse.org/build/html/Credentials.html) in your home directory.
-4- Click on the `Use this template` button above. This will allow you to create your own repository. Then you can follow the steps below.
-5- Create a [new Synapse Project](https://docs.synapse.org/articles/getting_started.html#making-and-managing-projects-in-synapse) to store data for this project, or request access to an existing one. 
+1. Read up on the tools. GitHub requires some basic protocols such as pull requests and commits, you should try to get a basic understanding. I found this [tutorial](https://medium.com/@jonathanmines/the-ultimate-github-collaboration-guide-df816e98fb67) that can serve as a starting point. Synapse also has a bit of learning curve. To understand what Synapse is and isn't, check out [this document](https://docs.synapse.org/articles/getting_started.html).
+2. Get [RStudio](http://rstudio.org). Basic R is essential, but RStudio will make your life a lot easier, I promise!
+3. Install the [synapse python client](https://python-docs.synapse.org/build/html/index.html), create a [`.synapseConfig` file](https://python-docs.synapse.org/build/html/Credentials.html) in your home directory.
+4. Click on the `Use this template` button above. This will allow you to create your own repository. Then you can follow the steps below.
+5. Create a [new Synapse Project](https://docs.synapse.org/articles/getting_started.html#making-and-managing-projects-in-synapse) to store data for this project, or request access to an existing one. 
 
 ### To contribute to this pipeline
 Have something that we forgot? Great! Check out the [CONTRIBUTING.md](./CONTRIBUTING.md) document. We welcome all additional tool and methods. Then you can create a pull request and merge your code in.
@@ -39,3 +37,4 @@ You will need to acquire a [synapse username](http://synapse.org/register) to ac
 
 ### Functional analysis
 There are typically a few steps we do for functional analysis. They are described in the [functional analysis](./functional) directory for now. 
+
