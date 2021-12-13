@@ -17,6 +17,22 @@ This repository is only the basic structure of the tools needed, not the end-to-
 ### To contribute to this pipeline
 Have something that we forgot? Great! Check out the [CONTRIBUTING.md](./CONTRIBUTING.md) document. We welcome all additional tool and methods. Then you can create a pull request and merge your code in.
 
+## Data description
+This specific instantiation of P3 focuses on the drug combination data in AML cell lines. Specifically we have two types of cell lines with three different drugs, depicted in here (add screenshot here).
+
+| Data type | Cell Line | Conditions | Link |
+| --- | --- | --- |
+| Proteomics | HL60 | | [syn25813233](https://www.synapse.org/#!Synapse:syn25813233) |
+| Phosphoproteomics | HL60 | [syn25813243](https://www.synapse.org/#!Synapse:syn25813243) |
+| Proteomics uncorrected | HL60 || [syn25813236](https://www.synapse.org/#!Synapse:syn25813236)
+| Phosphoproteomics uncorrected | HL60 | | [syn25813252](https://www.synapse.org/#!Synapse:syn25813252)|
+| Proteomics | Molm14 | | [syn25813133](https://www.synapse.org/#!Synapse:syn25813133) |
+| Phosphoproteomics | Molm14 | | [syn25813172](https://www.synapse.org/#!Synapse:syn25813172) |
+| Proteomics uncorrected | Molm14 || [syn25813139](https://www.synapse.org/#!Synapse:syn25813139)|
+| Phosphoproteomics uncorrected | Molm14 || [syn25813182](https://www.synapse.org/#!Synapse:syn25813182)|
+
+Using these data from the various time points and drug treatments we want to evaluate changes that occur. 
+
 ## Pipeline description
 This pipeline links together a series of data and code repositories to ensure that any data is saved for future use. Furthermore we hope to be able to reproduce the analysis for future projects. A brief overview of each tool is described here.
 ![arch](./img/arch.jpg)
