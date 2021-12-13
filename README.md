@@ -21,10 +21,10 @@ Have something that we forgot? Great! Check out the [CONTRIBUTING.md](./CONTRIBU
 This specific instantiation of P3 focuses on the drug combination data in AML cell lines. Specifically we have two types of cell lines with three different drugs, depicted in here (add screenshot here).
 
 | Data type | Cell Line | Conditions | Link |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | Proteomics | HL60 | | [syn25813233](https://www.synapse.org/#!Synapse:syn25813233) |
-| Phosphoproteomics | HL60 | [syn25813243](https://www.synapse.org/#!Synapse:syn25813243) |
-| Proteomics uncorrected | HL60 || [syn25813236](https://www.synapse.org/#!Synapse:syn25813236)
+| Phosphoproteomics | HL60 | | [syn25813243](https://www.synapse.org/#!Synapse:syn25813243) |
+| Proteomics uncorrected | HL60 | | [syn25813236](https://www.synapse.org/#!Synapse:syn25813236)
 | Phosphoproteomics uncorrected | HL60 | | [syn25813252](https://www.synapse.org/#!Synapse:syn25813252)|
 | Proteomics | Molm14 | | [syn25813133](https://www.synapse.org/#!Synapse:syn25813133) |
 | Phosphoproteomics | Molm14 | | [syn25813172](https://www.synapse.org/#!Synapse:syn25813172) |
